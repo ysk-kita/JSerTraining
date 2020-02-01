@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8">
+    <title><%=title %></title>
+    <!-- app.jsで指定したrouterパスを読み込みに行く　※通常のパス指定ではない -->
+    <link type="text/css" href="/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <head>
+        <h1><%=title %></h1>
+    </head>
+    <div role="main">
+        <p><%=content %></p>
+        <p>
+            <table>
+                <% for (var key in data) { %>
+                    <!-- includeするときもworkspaceのrootから参照するパス -->
+                    <%- include('ejs/data_item', {key:key, val:[data[key]]}) %>
+                <% } %>
+            </table>
+        </p>
+        <form method="post" action="/other">
+            <p>MESSAGE　
+                <input type="text" name="msg">
+                <input type="submit" value="送信">
+            </p>
+        </form>
+</body>
+
+</html>

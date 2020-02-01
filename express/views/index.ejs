@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8">
+    <title><%=title %></title>
+    <!-- public配下に置いてるcssを見に行く -->
+    <link type="text/css" href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <head>
+      <h1><%=title %></h1>
+    </head>
+    <div role="main">
+      <p><%=content %></p>
+      <p><a href="<%= link.href %>"><%= link.text %></a></p>
+
+      <form action="/" method="POST">
+        <p>
+          <input type="text" name="message">
+          <input type="submit" value="Submit">
+        </p>
+      </form>
+
+    </div>
+  </body>
+</html>

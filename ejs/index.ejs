@@ -14,15 +14,19 @@
     </head>
     <div role="main">
         <p><%=content %></p>
+        <!--
         <p>
             <table>
                 <% for (var key in data) { %>
-                    <!-- includeするときもworkspaceのrootから参照するパス -->
-                    <%- include('ejs/data_item', {key:key, val:[data[key]]}) %>
+                    <-- includeするときもworkspaceのrootから参照するパス --
+                    <%- include('ejs/data_item', {key:key, val:data[key]}) %>
                 <% } %>
             </table>
         </p>
-        <form method="post" action="/other">
+        -->
+        <h2><%= data.msg %></h2>
+        <h2>Your Message:<%= cookies %></h2>
+        <form method="post" action="/">
             <p>MESSAGE　
                 <input type="text" name="msg">
                 <input type="submit" value="送信">

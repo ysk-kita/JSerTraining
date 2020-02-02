@@ -10,8 +10,39 @@ var mysql_setting = {
   database : 'node_app'
 };
 
+// ★以下を追加
+// knexでDBに接続する情報を定義
+var knex = require('knex')({
+  dialect: 'mysql',
+  connection: {
+    host     : 'localhost',
+    user     : 'root',
+    password : '',
+    database : 'node_app',
+    charset  : 'utf8'
+  }
+});
+// 先ほど定義したknex情報を利用して、bookshelfオブジェクトを定義
+var Bookshelf = require('bookshelf')(knex);
+// tableNameで指定したテーブルの情報を取得するModelオブジェクトを作成
+var MyData = Bookshelf.Model.extend({
+  tableName: 'mydata'
+});
+// ここまで
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
+
+  new MyData().fetchAll().then(function(collection){
+    var data = {
+      title: 'hello!',
+      content: collection.toArray()
+    };
+
+    res.render('hello/index', data)
+  }).catch(function(err){
+    res.status(500).json({error: true, data: {message: err.message}});
+  });
 
   if(false){
     var msg = "please Write";
@@ -26,36 +57,37 @@ router.get('/', function(req, res, next) {
       content: msg
     };
     res.render('hello', data);
-  }
-  // データベースの設定情報
-  var connection = mysql.createConnection(mysql_setting);
-  // データベースに接続
-  connection.connect();
-  // データを取り出す
-  connection.query('SELECT * from mydata',
-          function (error, results, fields) {
-      // データベースアクセス完了時の処理
 
-      /* logをみる限り、dictを内包したリスト　
-        [{...}, {...}, ..., {...}]
-        logにはRow Data Packet という文字列ついてるけど無視して普通のDictと同じ用に使える
-      console.log(results)
-      console.log(results[0])
-      console.log(results[0]['id'])
-      */
-      if (error == null) {
-          var data = {
-              //title: 'Hello/show',
-              ///content: 'id = ' + id + ' のレコード：',
-              //mydata: results[0]
-              title: 'mysql',
-              content: results
-          }
-          // views 配下の hello(dir)/index.ejsを呼び出してる
-          res.render('hello/index', data);
-      }
-  });
-  connection.end();
+    // データベースの設定情報
+    var connection = mysql.createConnection(mysql_setting);
+    // データベースに接続
+    connection.connect();
+    // データを取り出す
+    connection.query('SELECT * from mydata',
+            function (error, results, fields) {
+        // データベースアクセス完了時の処理
+
+        /* logをみる限り、dictを内包したリスト　
+          [{...}, {...}, ..., {...}]
+          logにはRow Data Packet という文字列ついてるけど無視して普通のDictと同じ用に使える
+        console.log(results)
+        console.log(results[0])
+        console.log(results[0]['id'])
+        */
+        if (error == null) {
+            var data = {
+                //title: 'Hello/show',
+                ///content: 'id = ' + id + ' のレコード：',
+                //mydata: results[0]
+                title: 'mysql',
+                content: results
+            }
+            // views 配下の hello(dir)/index.ejsを呼び出してる
+            res.render('hello/index', data);
+        }
+    });
+    connection.end();
+  }
 });
 
 router.post('/send', function(req, res, next) {
@@ -102,55 +134,84 @@ router.post('/add',[
       }
       res.render('hello/add', data);
     } else {
-
-      var nm = req.body.name;
-      var ml = req.body.mail;
-      var ag = req.body.age;
-      var data = {
-        'name': nm, 'mail': ml, 'age': ag
-      };
-
-      // データベースの設定情報
-      var connection = mysql.createConnection(mysql_setting);
-      // データベースに接続
-      connection.connect();
-
-      connection.query('insert into mydata set ? ', data,
-        function(error, results, fields){
-          res.redirect('/hello');
+      new MyData(req.body).save().then(function(model){
+        res.redirect('/hello');
       });
 
-      connection.end();
+      if(false){
+        var nm = req.body.name;
+        var ml = req.body.mail;
+        var ag = req.body.age;
+        var data = {
+          'name': nm, 'mail': ml, 'age': ag
+        };
 
+        // データベースの設定情報
+        var connection = mysql.createConnection(mysql_setting);
+        // データベースに接続
+        connection.connect();
+
+        connection.query('insert into mydata set ? ', data,
+          function(error, results, fields){
+            res.redirect('/hello');
+        });
+
+        connection.end();
+      }
     }
 });
 
 // 指定IDのレコードを表示する
 router.get('/show', (req, res, next) => {
   var id = req.query.id;
-
-  // データベースの設定情報
-  var connection = mysql.createConnection(mysql_setting);
-
-  // データベースに接続
-  connection.connect();
-
-  // データを取り出す
-  connection.query('SELECT * from mydata where id=?', id,
-          function (error, results, fields) {
-      // データベースアクセス完了時の処理
-      if (error == null) {
-          var data = {
-              title: 'Hello/show',
-              content: 'id = ' + id + ' のレコード：',
-              mydata: results[0]
-          }
-          res.render('hello/show', data);
-      }
+  new MyData().where('id', '=', id).fetch().then(function(collection){
+    var data = {
+      title: 'Hello/show',
+      content: 'id = ' + id + ' のレコード：',
+      mydata: collection.attributes
+  }
+  res.render('hello/show', data);
   });
 
-  // 接続を解除
-  connection.end();
+  if(false){
+    // データベースの設定情報
+    var connection = mysql.createConnection(mysql_setting);
+    // データベースに接続
+    connection.connect();
+    // データを取り出す
+    connection.query('SELECT * from mydata where id=?', id,
+            function (error, results, fields) {
+        // データベースアクセス完了時の処理
+        if (error == null) {
+            var data = {
+                title: 'Hello/show',
+                content: 'id = ' + id + ' のレコード：',
+                mydata: results[0]
+            }
+            res.render('hello/show', data);
+        }
+    });
+    // 接続を解除
+    connection.end();
+  }
+});
+
+
+// ページネーションの実現
+Bookshelf.plugin('pagination');
+router.get('/:page', function(req,res, next){
+  var pg = req.params.page;
+  console.log('page number:'+pg);
+  // fetchPage({page: <ページ番号> , pageSize: <1page辺りの表示数>})
+  new MyData().fetchPage({page: pg , pageSize: 2}).then(function(collection){
+    var data = {
+      title: 'hello page',
+      content: collection.toArray(),
+      pagination: collection.pagination
+    };
+    console.log(collection.pagination);
+    res.render('hello/index', data);
+  });
 });
 
 module.exports = router;

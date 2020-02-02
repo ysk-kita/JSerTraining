@@ -13,30 +13,25 @@
         <h1><%= title %></h1>
     </head>
     <div role="main">
-        <p><%- content %></p>
-        <form method="post" action="/hello/add">
+        <p><%= content %></p>
         <table>
             <tr>
+                <th>ID</th>
+                <td><%= mydata.id %></td>
+            </tr>
+            <tr>
                 <th>NAME</th>
-                <td><input type="text" name="name"
-                    value="<%= form.name %>"></td>
+                <td><%= mydata.name %></td>
             </tr>
             <tr>
                 <th>MAIL</th>
-                <td><input type="text" name="mail"
-                    value="<%= form.mail %>"></td>
+                <td><%= mydata.mail %></td>
             </tr>
             <tr>
                 <th>AGE</th>
-                <td><input type="text" name="age"
-                    value="<%= form.age %>"></td>
-            </tr>
-            <tr>
-                <th></th>
-                <td><input type="submit" value="作成"></td>
+                <td><%= mydata.age %></td>
             </tr>
         </table>
-        </form>
     </div>
 </body>
 

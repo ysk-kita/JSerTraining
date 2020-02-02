@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  </head>
+  <script>
+
+  $(document).ready(()=>{
+    $('#btn').click(()=>{
+      var n = $('#num').val();
+      $.getJSON('/ajax?id=' + n , (res)=>{
+        var msg = '<table>'
+          + '<tr><th>名前:</th>'
+          + '<td>' + res.name + '</td></tr>'
+          + '<tr><th>年齢:</th>'
+          + '<td>' + res.age + '</td></tr>'
+          + '<tr><th>メール:</th>'
+          + '<td>' + res.mail + '</td></tr>'
+        + '</table>';
+        $('#ajax').html(msg);
+      });
+    });
+  });
+  </script>
+
+  <body>
+    <h1><%= title %></h1>
+  <!--
+    <p> <%- content %></p>
+    <form method="POST" action="/hello/send">
+      <input type="text" name="msg">
+      <input type="submit" value="submit">
+    </form>
+    <p>--------------</p>
+    <p id="ajax"> <%- content %></p>
+    <input type="text" name="num" id="num">
+    <input type="button" value="submit" id="btn">
+    <p>--------------</p>
+  -->
+    <table>
+      <% for(var i in content) { %>
+        <tr>
+          <% var obj = content[i]; %>
+          <th><%= obj.id %></th>
+          <td><%= obj.name %></td>
+          <td><%= obj.mail %></td>
+          <td><%= obj.age %></td>
+        </tr>
+      <% } %>
+    </table>
+
+  </body>
+</html>
